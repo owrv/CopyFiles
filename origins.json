@@ -1,0 +1,27 @@
+{
+	"DirectoriesToBackup": "C:\\backup\\",
+	"DestinationRoot": [
+		{
+			"SourcePath": "\\storage\\emulated\\0\\Android\\media\\com.whatsapp\\WhatsApp\\Media\\WhatsApp Images",
+			"DestinationFolder": "WhatsApp Images",
+			"IndividualTargetFormats": false,
+			"FileFormats": [
+				".jpg",
+				"png",
+				".gif"
+			]
+		},
+		{
+			"SourcePath": "\\storage\\emulated\\0\\Android\\media\\com.whatsapp\\WhatsApp\\Media\\WhatsApp Video",
+			"DestinationFolder": "C:\\dev\\diretorio\\processado",
+			"IndividualTargetFormats": false,
+			"FileFormats": [ ".mp4" ]
+		},
+		{
+			"SourcePath": "\\storage\\emulated\\0\\DCIM\\Camera",
+			"DestinationFolder": "C:\\dev\\diretorio\\processado",
+			"IndividualTargetFormats": false,
+			"FileFormats": [ ".mp4", ".jpg" ]
+		}
+	]
+}
