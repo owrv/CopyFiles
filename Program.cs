@@ -41,6 +41,12 @@ public class Program
             {
                 try
                 {
+                    if (dataBackupConfig.DestinationRoot[i].IndividualTargetFormats)
+                    {
+                        ProcessFileByFormat(file, todayPath, dataBackupConfig.DestinationRoot[i]);
+                    } else 
+                    {
+                        SafeFileMove(file, todayPath);
             }
         }
                 catch (Exception ex)
