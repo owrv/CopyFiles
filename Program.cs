@@ -65,13 +65,17 @@ public class Program
             }
         File.Move(fileInfos.Name, Path.Combine(todayPath, fileInfos.Name));
         }
-    }
-    private static object Mover(FileInfo fileInfos, string todayPath, string extension)
+    private static void ProcessFileByFormat(FileInfo sourceFile, string todayPath, DirectoryBackup directoryBackup)
     {
-        var pathWithExtension = Path.Combine(todayPath, extension);
-        if (!Directory.Exists(pathWithExtension))
+        for (int i = 0; i < directoryBackup?.FileFormats?.Count; i++) {
+            if (sourceFile.Extension != directoryBackup.FileFormats[i]) { continue; }
+
+            var destinationFolder = Path.Combine(todayPath, directoryBackup.DestinationFolder);
+            if (!Directory.Exists(destinationFolder))
         {
-            Directory.CreateDirectory(pathWithExtension);
+                Directory.CreateDirectory(destinationFolder);
+            }
+            File.Move(sourceFile.FullName, Path.Combine(destinationFolder, sourceFile.Name));
         }
         File.Move(fileInfos.Name, Path.Combine(pathWithExtension, fileInfos.Name));
         return null;
