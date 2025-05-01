@@ -17,56 +17,65 @@ public class Program
         string jsonString = File.ReadAllText(backupConfig);
         var jsonOptions = GetJsonOptions();
         var dataBackupConfig = JsonSerializer.Deserialize<BackupConfig>(jsonString, jsonOptions)!;
+        if (dataBackupConfig == null) throw new ArgumentException(nameof(DirectoryBackup));
 
         if (dataBackupConfig?.DestinationRoot?.Count <= 0 || dataBackupConfig?.DestinationRoot?.Count <= 0) { return; }
         var today = DateTime.Today;
-        string todayPath = Path.Combine(dataBackupConfig?.DirectoriesToBackup, today.ToString("dd.MM.yyyy"));
+        if (dataBackupConfig?.DirectoriesToBackup == null)
+        {
+            throw new InvalidOperationException("O caminho de backup não está configurado.");
+        }
+        string todayPath = Path.Combine(dataBackupConfig.DirectoriesToBackup, today.ToString("dd.MM.yyyy"));
 
         for (int i = 0; i < dataBackupConfig?.DestinationRoot?.Count; i++)
         {
             if (!Path.Exists(dataBackupConfig.DestinationRoot[i].SourcePath) &&
-                !Path.Exists(Path.Combine(dataBackupConfig.DirectoriesToBackup, dataBackupConfig?.DestinationRoot[i]?.DestinationFolder))) { return; }
+                !Path.Exists(Path.Combine(dataBackupConfig.DirectoriesToBackup, dataBackupConfig.DestinationRoot[i].DestinationFolder))) { return; }
             if (!Path.Exists(todayPath)) { Directory.CreateDirectory(todayPath); }
             if (!Path.Exists(todayPath)) { return; }
+            if (dataBackupConfig.DestinationRoot[i].SourcePath == null) { return; }
+            var sourceFiles = new System.IO.DirectoryInfo(dataBackupConfig.DestinationRoot[i].SourcePath).GetFiles();
+            if (sourceFiles.Length == 0) { return; }
 
-            for (global::System.Int32 j = 0; j < dataBackupConfig?.DestinationRoot[i]?.FileFormats?.Count; j++)
+            Parallel.ForEach(sourceFiles, file =>
             {
-                HandlerFiles(dataBackupConfig.DestinationRoot[i], todayPath, dataBackupConfig.DestinationRoot[i].FileFormats[j]);
-            }
-        }
-    }
-
-    private static void HandlerFiles(DirectoryBackup directoryBackup, string todayPath, string fileFormat)
-    {
-        var originsFiles = new System.IO.DirectoryInfo(directoryBackup.SourcePath).GetFiles(fileFormat);
-        if (originsFiles.Length == 0) { return; }
-
-        for (int i = 0; i < originsFiles.Length; i++)
-        {
-            if (directoryBackup.IndividualTargetFormats)
-            {
-                _ = fileFormat switch
+                try
                 {
-                    ".mp4" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".mp3" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".m4a" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".jpg" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    _ => "",
-                };
-            } else
-            {
-                File.Move(originsFiles[i].FullName, Path.Combine(todayPath, originsFiles[i].Name));
+                    if (dataBackupConfig.DestinationRoot[i].IndividualTargetFormats)
+                    {
+                        ProcessFileByFormat(file, todayPath, dataBackupConfig.DestinationRoot[i]);
+                    } else 
+                    {
+                        SafeFileMove(file, todayPath);
             }
         }
-    }
-    private static object Mover(FileInfo fileInfos, string todayPath, string extension)
+                catch (Exception ex)
     {
-        var pathWithExtension = Path.Combine(todayPath, extension);
-        if (!Directory.Exists(pathWithExtension))
-        {
-            Directory.CreateDirectory(pathWithExtension);
+
+                    throw;
+                }
+            });
         }
-        File.Move(fileInfos.Name, Path.Combine(pathWithExtension, fileInfos.Name));
-        return null;
+    }
+    private static void SafeFileMove(FileInfo fileInfos, string todayPath)
+        {
+        if (!Directory.Exists(todayPath))
+            {
+            Directory.CreateDirectory(todayPath);
+            }
+        File.Move(fileInfos.Name, Path.Combine(todayPath, fileInfos.Name));
+        }
+    private static void ProcessFileByFormat(FileInfo sourceFile, string todayPath, DirectoryBackup directoryBackup)
+    {
+        for (int i = 0; i < directoryBackup?.FileFormats?.Count; i++) {
+            if (sourceFile.Extension != directoryBackup.FileFormats[i]) { continue; }
+
+            var destinationFolder = Path.Combine(todayPath, directoryBackup.DestinationFolder);
+            if (!Directory.Exists(destinationFolder))
+        {
+                Directory.CreateDirectory(destinationFolder);
+            }
+            File.Move(sourceFile.FullName, Path.Combine(destinationFolder, sourceFile.Name));
+        }
     }
 }
