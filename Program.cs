@@ -2,20 +2,8 @@
 // ler arquivo json para obter diretórios de chegagem e destino de arquivos
 
 using System.Text.Json;
+using CopyFiles.Models;
 
-public class BackupConfig
-{
-    public string? DirectoriesToBackup { get; set; }
-    public List<DirectoryBackup>? DestinationRoot { get; set; }
-}
-
-public class DirectoryBackup
-{
-    public string? SourcePath { get; set; }
-    public string? DestinationFolder { get; set; }
-    public bool IndividualTargetFormats { get; set; }
-    public List<string>? FileFormats { get; set; }
-}
 public class Program
 {
     public static JsonSerializerOptions GetJsonOptions()
