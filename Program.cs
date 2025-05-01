@@ -77,7 +77,5 @@ public class Program
             }
             File.Move(sourceFile.FullName, Path.Combine(destinationFolder, sourceFile.Name));
         }
-        File.Move(fileInfos.Name, Path.Combine(pathWithExtension, fileInfos.Name));
-        return null;
     }
 }
