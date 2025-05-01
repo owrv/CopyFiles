@@ -55,21 +55,15 @@ public class Program
                     throw;
                 }
             });
+        }
+    }
+    private static void SafeFileMove(FileInfo fileInfos, string todayPath)
         {
-            if (directoryBackup.IndividualTargetFormats)
+        if (!Directory.Exists(todayPath))
             {
-                _ = fileFormat switch
-                {
-                    ".mp4" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".mp3" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".m4a" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    ".jpg" => Mover(originsFiles[i], todayPath, originsFiles[i].Extension),
-                    _ => "",
-                };
-            } else
-            {
-                File.Move(originsFiles[i].FullName, Path.Combine(todayPath, originsFiles[i].Name));
+            Directory.CreateDirectory(todayPath);
             }
+        File.Move(fileInfos.Name, Path.Combine(todayPath, fileInfos.Name));
         }
     }
     private static object Mover(FileInfo fileInfos, string todayPath, string extension)
