@@ -34,6 +34,8 @@ public class Program
             if (!Path.Exists(todayPath)) { Directory.CreateDirectory(todayPath); }
             if (!Path.Exists(todayPath)) { return; }
             if (dataBackupConfig.DestinationRoot[i].SourcePath == null) { return; }
+            var sourceFiles = new System.IO.DirectoryInfo(dataBackupConfig.DestinationRoot[i].SourcePath).GetFiles();
+            if (sourceFiles.Length == 0) { return; }
 
             for (global::System.Int32 j = 0; j < dataBackupConfig?.DestinationRoot[i]?.FileFormats?.Count; j++)
             {
