@@ -37,19 +37,20 @@ public class Program
             var sourceFiles = new System.IO.DirectoryInfo(dataBackupConfig.DestinationRoot[i].SourcePath).GetFiles();
             if (sourceFiles.Length == 0) { return; }
 
-            for (global::System.Int32 j = 0; j < dataBackupConfig?.DestinationRoot[i]?.FileFormats?.Count; j++)
+            Parallel.ForEach(sourceFiles, file =>
             {
-                HandlerFiles(dataBackupConfig.DestinationRoot[i], todayPath, dataBackupConfig.DestinationRoot[i].FileFormats[j]);
+                try
+                {
             }
         }
-    }
-
-    private static void HandlerFiles(DirectoryBackup directoryBackup, string todayPath, string fileFormat)
+                catch (Exception ex)
     {
         var originsFiles = new System.IO.DirectoryInfo(directoryBackup.SourcePath).GetFiles(fileFormat);
         if (originsFiles.Length == 0) { return; }
 
-        for (int i = 0; i < originsFiles.Length; i++)
+                    throw;
+                }
+            });
         {
             if (directoryBackup.IndividualTargetFormats)
             {
