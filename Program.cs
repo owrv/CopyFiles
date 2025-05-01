@@ -51,8 +51,6 @@ public class Program
         }
                 catch (Exception ex)
     {
-        var originsFiles = new System.IO.DirectoryInfo(directoryBackup.SourcePath).GetFiles(fileFormat);
-        if (originsFiles.Length == 0) { return; }
 
                     throw;
                 }
